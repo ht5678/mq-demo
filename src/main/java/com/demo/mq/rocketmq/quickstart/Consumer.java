@@ -29,6 +29,10 @@ public class Consumer {
          */
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         
+        /**
+         * 订阅的topic的名字要和producer发布的topic名字一样，不然收不到消息
+         * 第二个参数是tag，*通配符表示会匹配所有的tag，  TagA 表示只会收到tag名字为TagA的消息，如果多个的话，就是TagA || TagB ...
+         */
         consumer.subscribe("TopicTest", "*");
         
         consumer.registerMessageListener(new MessageListenerConcurrently() {
@@ -36,6 +40,12 @@ public class Consumer {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 System.out.println(Thread.currentThread().getName()+"Receive New Messages "+msgs);
+                //打印消息的详细信息
+                for(MessageExt ext : msgs){
+                    System.out.println(ext.getTopic());
+                    System.out.println(ext.getTags());
+                    System.out.println(new String(ext.getBody()));
+                }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
